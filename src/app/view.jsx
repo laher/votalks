@@ -30,35 +30,54 @@ import {
 // Application view
 export const view = state => (
   <div class="container">
+  <h1>Votalks</h1>
   <div class="card">
   <div class="left">
-  <h1>Votalks</h1>
-  <p>Video voting app</p>
-  <p>Built with <a href="https://github.com/jorgebucaran/hyperapp" target="_blank">Hyperapp 2.0</a></p>
-  <p><a href="https://github.com/laher/votalks" target="_blank"><Github /> Source code</a></p>
-  <p><div><div class="g-signin2" data-onsuccess="onSignIn"></div></div></p>
-  </div>
-  <div className="right">
   <div class="video-list">
-  <form class="new-item-form" onsubmit={AddItem} method="post">
-  <input type="text" placeholder="Drop a youtube link here..." value={state.input} oninput={SetInput} required />
-  <button type="submit"><Plus /></button>
-  </form>
-  <h4>{state.items.length} talks</h4>
-  <ul class="list">
-  {state.items.map(item => <Item {...item} />)}
-  </ul>
+    <form class="new-item-form" onsubmit={AddItem} method="post">
+    <input type="text" placeholder="Drop a youtube video id here ..." value={state.input} oninput={SetInput} required />
+    <button type="submit"><Plus /></button>
+    </form>
+    <h4>{state.items.length} talks</h4>
+    <ul class="list">
+    {state.items.map(item => <Item {...item} />)}
+    </ul>
   </div>
+
   <div class="info">
   <span>Click to edit.</span>
   <a onclick={[ClearCheckedItems]}>Clear checked items</a>
   </div>
+
+  </div>
+  <div className="right">
+  <p>Watch</p>
+  {state.items.filter(item => item.id === state.selectedItem).map(item => <Viewer {...item} /> )}
+
+  </div>
+
+  </div>
+
+  <div id="menu-outer">
+  <div class="table">
+  <ul class='nav'>
+  <li>Video voting app</li>
+  <li><a href="https://github.com/laher/votalks" target="_blank"><Github /> Source</a></li>
+  <li><div><div class="g-signin2" data-onsuccess="onSignIn"></div></div></li>
+  </ul>
   </div>
   </div>
   <div class="state-viewer">
   <a onclick={ToggleStateViewer}>{state.showState ? 'Hide state' : 'Show app state'}</a>
   {state.showState ? <pre>{JSON.stringify(state, null, 2)}</pre> : null}
   </div>
+  </div>
+)
+
+const Viewer = ({id, value, done, editing}) => (
+  <div>
+  {value}
+  <iframe width="420" height="315" src={"https://www.youtube.com/embed/" + value} />
   </div>
 )
 
@@ -70,6 +89,7 @@ const Item = ({id, value, done, editing}) => (
     ? ( // If the item if currently being edited
       <form class="inner" method="post" onsubmit={[ToggleItemEditing, id]}>
       <input type="text" value={value} onCreate={el => el.focus()} oninput={[UpdateItem, id]} required />
+      <button class="confirm">{<Plus />}</button>
       <button class="confirm">{<Check />}</button>
       </form>
     )

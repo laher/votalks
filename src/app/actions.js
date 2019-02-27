@@ -21,21 +21,32 @@ export const ToggleStateViewer = (state) => ({
 // and resets the input.
 export const AddItem = (state, ev) => {
   ev.preventDefault()
+  const id = nanoid()
   return {
     ...state,
     input: '',
+    selectedItem: id,
     items: state.items.concat({
-      id: nanoid(),
-      value: state.input,
+      id: id,
+      value: cleanInput(state.input),
       done: false,
       editing: false
     })
   }
 }
 
+const cleanInput = (input) => {
+  const pref = "https://www.youtube.com/watch?v="
+  if (input.startsWith(pref)) {
+    return input.substring(pref.length)
+  }
+  return input
+}
+
 // Updates the "value" attribute of an item by ID
 export const UpdateItem = (state, id, ev) => ({
   ...state,
+  selectedItem: id,
   items: state.items.map(item =>
     id === item.id
       ? ({...item, value: ev.target.value})
@@ -46,6 +57,7 @@ export const UpdateItem = (state, id, ev) => ({
 // Inverts the "done" attribute of an item by ID
 export const ToggleItem = (state, id) => ({
   ...state,
+  selectedItem: id,
   items: state.items.map(item =>
     id === item.id
       ? ({...item, done: !item.done})
@@ -59,6 +71,7 @@ export const ToggleItemEditing = (state, id, ev) => {
   ev.preventDefault()
   return {
     ...state,
+    selectedItem: id,
     items: state.items.map(item =>
       id === item.id
         ? ({...item, editing: !item.editing})
@@ -70,11 +83,13 @@ export const ToggleItemEditing = (state, id, ev) => {
 // Removes an item in the array by ID
 export const DeleteItem = (state, id) => ({
   ...state,
+  selectedItem: state.selectedItem === id ? null : state.selectedItem,
   items: state.items.filter(item => id !== item.id)
 })
 
 // Removes all "done" items
 export const ClearCheckedItems = (state) => ({
   ...state,
+  selectedItem: null,
   items: state.items.filter(item => !item.done)
 })

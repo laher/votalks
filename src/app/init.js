@@ -2,5 +2,6 @@
 export const init = {
   input: '',
   showState: false,
-  items: []
+  items: [],
+  selectedItem: null,
 }
