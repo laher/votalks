@@ -4,12 +4,27 @@
 
 // Generates a unique random string
 import nanoid from 'nanoid'
+import YouTube from 'simple-youtube-api'
 
 // Sets the new item input value in the state
 export const SetInput = (state, ev) => ({
   ...state,
   input: ev.target.value
 })
+
+const youtube = new YouTube('AIzaSyA0rLfYb8kypIq7Ei--1NTeXKetskVnK4w');
+export const Search = (state, ev) => {
+  ev.preventDefault()
+
+  youtube.searchVideos(state.input, 4)
+    .then(results => {
+      console.log(`The video's title is ${results[0].title}`)
+    })
+    .catch(console.log)
+  return {
+    ...state,
+  }
+}
 
 // Toggle the state viewer
 export const ToggleStateViewer = (state) => ({
@@ -49,8 +64,8 @@ export const UpdateItem = (state, id, ev) => ({
   selectedItem: id,
   items: state.items.map(item =>
     id === item.id
-      ? ({...item, value: ev.target.value})
-      : item
+    ? ({...item, value: ev.target.value})
+    : item
   )
 })
 
@@ -60,8 +75,8 @@ export const ToggleItem = (state, id) => ({
   selectedItem: id,
   items: state.items.map(item =>
     id === item.id
-      ? ({...item, done: !item.done})
-      : item
+    ? ({...item, done: !item.done})
+    : item
   )
 })
 
@@ -74,8 +89,8 @@ export const ToggleItemEditing = (state, id, ev) => {
     selectedItem: id,
     items: state.items.map(item =>
       id === item.id
-        ? ({...item, editing: !item.editing})
-        : ({...item, editing: false})
+      ? ({...item, editing: !item.editing})
+      : ({...item, editing: false})
     )
   }
 }
